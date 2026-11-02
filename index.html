@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>YStar Founders Class Yearbook</title>
+<meta name="description" content="Every YStar Founders student signs this yearbook with their first GitHub pull request.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@500;700&family=Figtree:wght@400;600;700&display=swap">
+<style>
+  :root{--bg:#0E1A3F;--panel:#16255A;--edge:#050A1E;--ink:#FFFFFF;--muted:#B9C3E6;--gold:#FFC93C;--link:#9FD0FF;color-scheme:dark}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Figtree,system-ui,sans-serif}
+  .wrap{max-width:1080px;margin:0 auto;padding:40px 20px 60px}
+  h1{font:700 clamp(32px,6vw,52px)/1.05 "Pixelify Sans",system-ui,sans-serif;margin:0 0 10px;letter-spacing:0;font-variant-ligatures:none}
+  h1 span{color:var(--gold)}
+  .lead{color:var(--muted);max-width:60ch;margin:0 0 26px}
+  .sign{display:inline-block;background:var(--gold);color:#0E1A3F;font:700 17px "Pixelify Sans",system-ui,sans-serif;padding:12px 20px;border:3px solid var(--edge);border-radius:12px;box-shadow:0 4px 0 var(--edge);text-decoration:none}
+  .sign:hover{transform:translateY(-2px)}
+  .count{margin:30px 0 14px;font:600 15px "Pixelify Sans",system-ui,sans-serif;color:var(--muted)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:18px}
+  .card{background:var(--panel);border:3px solid var(--edge);border-radius:16px;box-shadow:0 5px 0 var(--edge);padding:18px;display:flex;flex-direction:column;gap:6px;min-width:0}
+  .emo{font-size:40px;line-height:1}
+  .name{font:700 22px "Pixelify Sans",system-ui,sans-serif;font-variant-ligatures:none}
+  .prod{font-weight:700;color:var(--gold)}
+  .line{color:var(--muted);margin:0;overflow-wrap:anywhere}
+  .card a{color:var(--link);font-weight:700;text-decoration:none;margin-top:auto;overflow-wrap:anywhere}
+  .card a:hover{text-decoration:underline}
+  .note{color:var(--muted)}
+  footer{margin-top:40px;color:var(--muted);font-size:14px}
+  footer a{color:var(--link)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Class <span>Yearbook</span></h1>
+  <p class="lead">Every YStar Founders student signs this page with their first real GitHub pull request: fork, commit, pull request, review, merge. Here's who has shipped so far.</p>
+  <a class="sign" href="https://github.com/YStarEdu/founders-yearbook#sign-it-in-5-steps">Sign the yearbook</a>
+  <div class="count" id="count">Loading cards…</div>
+  <div class="grid" id="grid"></div>
+  <footer>Built by YStar Founders students · <a href="https://ystaredu.ca">YStar Edu</a></footer>
+</div>
+<script>
+(async () => {
+  const grid = document.getElementById("grid"), count = document.getElementById("count");
+  const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
+  try {
+    const r = await fetch("https://api.github.com/repos/YStarEdu/founders-yearbook/contents/students");
+    if (!r.ok) throw new Error(r.status);
+    const files = (await r.json()).filter(f => f.type === "file" && /\.json$/.test(f.name));
+    const cards = (await Promise.all(files.map(f => fetch(f.download_url).then(x => x.json()).catch(() => null)))).filter(Boolean);
+    count.textContent = cards.length === 1 ? "1 founder has signed" : cards.length + " founders have signed";
+    cards.forEach(c => {
+      const card = el("article", "card");
+      card.append(el("div", "emo", String(c.emoji || "⭐").slice(0, 8)), el("div", "name", String(c.name || "").slice(0, 20)), el("div", "prod", String(c.product || "").slice(0, 30)), el("p", "line", String(c.line || "").slice(0, 90)));
+      if (/^https:\/\/[^\s"<>]+$/.test(c.url || "")) { const a = el("a", null, c.url.replace(/^https:\/\//, "").replace(/\/$/, "")); a.href = c.url; a.target = "_blank"; a.rel = "noopener noreferrer nofollow"; card.append(a); }
+      grid.append(card);
+    });
+  } catch (e) {
+    count.textContent = ""; grid.append(el("p", "note", "The cards couldn't load right now. Try again in a minute, or see them in the students folder on GitHub."));
+  }
+})();
+</script>
+</body>
+</html>
