@@ -38,7 +38,13 @@ The signed yearbook is online at **https://ystaredu.github.io/founders-yearbook/
 - One card per student, and only edit your own card.
 - Be kind. Everything here is public.
 
-An automatic check runs on every pull request and tells you if something needs fixing. A YStar mentor merges every card by hand.
+An automatic check reads your card and tells you if something needs fixing. GitHub holds the check for first-time contributors until a mentor starts it, so your first one may wait a little. A YStar mentor merges every card by hand.
+
+## For mentors
+
+1. Open each new pull request. If the check is waiting, click **Approve and run workflows**.
+2. When the check is green, read the card: first name or nickname only, nothing personal, kind words. Then **Merge pull request**.
+3. The yearbook page updates within a minute.
 
 ## Why we do this
 
